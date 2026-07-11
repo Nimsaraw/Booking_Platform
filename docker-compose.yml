@@ -1,0 +1,61 @@
+services:
+
+  postgres:
+    image: postgres:17
+    container_name: booking-postgres
+
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: booking_platform
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ZeusNim44#
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+  backend:
+
+    build:
+      context: ./booking-platform-api
+
+    container_name: booking-backend
+
+    depends_on:
+      - postgres
+
+    restart: unless-stopped
+
+    ports:
+      - "3000:3000"
+
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: ZeusNim44#
+      DB_DATABASE: booking_platform
+
+      JWT_SECRET: my_booking_platform_secret_key_2026
+      JWT_EXPIRES_IN: 1d
+
+
+  frontend:
+
+    build:
+      context: ./booking-platform-frontend
+
+    container_name: booking-frontend
+
+    depends_on:
+      - backend
+
+    ports:
+      - "5173:5173"
+
+volumes:
+  postgres_data:
